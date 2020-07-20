@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Detail Match</title>
+  <meta name="description" content="halaman detail" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="css/materialize.min.css" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#455a64" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" href="asset/iconR.png">
+</head>
+
+<body>
+
+  <div class="navbar-fixed">
+    <nav class="blue-grey darken-3" role="navigation">
+      <div class="nav-wrapper container">
+        <a class="hide-on-small-only" href="javascript:goBack()" class="brand-logo" id="logo-container">Detail Match</a>
+        <a href="javascript:goBack()" class="sidenav-trigger" data-target="nav-mobile">
+          <i class="material-icons">arrow_back</i>
+        </a>
+        <ul class="topnav right hide-on-med-and-down">
+        </ul>
+        <ul class="sidenav" id="nav-mobile"></ul>
+      </div>
+    </nav>
+
+  </div>
+  <div class="container" id="body-content"></div>
+
+  <div class="row">
+    <div class="col s12 m12">
+      <div id="save" class="fixed-action-btn">
+        <a class="btn-floating btn-large blue-grey darken-3">
+          <i class="medium material-icons">archive</i>
+        </a>
+      </div>
+      <div class="card">
+          <div class="card-content">
+            <div style="text-align: center">
+              <img id="logoKlub" alt="data.crestUrls" align="center" width="15%" vspace="25">
+              <p id="namaKlub" style="font-weight: bold; font-size: 25px"></p>
+            </div>
+            <hr size="12px">
+          </div>
+
+          <div class="card-tabs">
+            <div class="card-content">
+              <div id="overview"></div>
+            </div>
+          </div>
+      </div>
+      <div class="card" style="padding: 35px">
+          <h2 class="center-align hide-on-small-only">Player Details</h2>
+          <div class="center-align" style="margin: 25px 0">
+              <span class="blue-grey darken-3 waves-light btn hide-on-med-and-up show-on-small">Player Details</span>
+          </div>
+          <table class="highlight centered">
+            <thead class="blue-grey lighten-1" style="color: white; font-size: 20px">
+              <tr>
+                  <th style="width: 50%">Name</th>
+                  <th>Position</th>
+              </tr>
+            </thead>
+
+            <tbody id="squad">
+            </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/snarkdown@1.0.2/dist/snarkdown.umd.js"></script>
+  <script src="/js/materialize.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/idb.js"></script>
+  <script src="/js/db.js"></script>
+  <script src="/js/dateHelper.js"></script>
+  <script src="/js/detail.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = Number(urlParams.get("id"));
+      let isFavorit = false
+      cekData("tim_favorit", id).then( _ => {
+        document.getElementById('save').innerHTML = `
+        <div id="save" class="fixed-action-btn">
+          <a class="btn-floating btn-large">
+            <i class="medium material-icons">archive</i>
+          </a>
+        </div>`
+        getSavedDataById("tim")
+        isFavorit = true
+      }).catch( _ => {
+        getDetailKlubById()
+        isFavorit = false
+      })
+
+      const save = document.getElementById("save");
+
+      save.onclick = function () {
+        console.log("Tombol FAB di klik.");
+        if (isFavorit) {
+          deleteDatafav("tim_favorit", id);
+          isFavorit = false
+        } else {
+          item = getDetailKlubById();
+          item.then(function (tim) {
+            createDataFav("tim", tim);
+          });
+          isFavorit = true
+        }
+      };
+    });
+  </script>
+  <script type="text/javascript">
+    function goBack(){
+      window.history.back()
+    }
+  </script>
+</body>
+
+</html>
